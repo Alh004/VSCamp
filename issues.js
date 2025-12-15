@@ -9,9 +9,16 @@ Vue.createApp({
     },
     methods: {
         getAllIssues() {
+            this.error = null;
+
             axios.get(issuesUri)
-                .then(res => this.issues = res.data)
-                .catch(err => this.error = err.message);
+                .then(res => {
+                    console.log(res.data);
+                    this.issues = res.data;
+                })
+                .catch(err => {
+                    this.error = err.message;
+                });
         }
     }
 }).mount("#app");
