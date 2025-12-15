@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Issues Test</title>
+
+    <!-- Axios + Vue -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+
+<h1>Issues</h1>
+<nav>
+  <a href="index.html">Rooms</a> |
+  <a href="issues.html">Issues</a>
+</nav>
+<hr>
+
+
+<div id="app">
+    <button @click="getAllIssues">Load Issues</button>
+
+    <div v-if="error" style="color:red">
+        Error: {{ error }}
+    </div>
+
+    <ul v-if="issues.length > 0">
+        <li v-for="issue in issues" :key="issue.id">
+            <strong>{{ issue.title }}</strong><br>
+            {{ issue.description }}<br>
+            Status: {{ issue.status }}<br>
+            Severity: {{ issue.severity }}<br>
+            Room ID: {{ issue.roomId }}<br>
+            Reporter User ID: {{ issue.reporterUserId }}
+            <hr>
+        </li>
+    </ul>
+
+    <div v-else>
+        No issues loaded yet…
+    </div>
+</div>
+
+<script src="./issues.js"></script>
+</body>
+</html>
