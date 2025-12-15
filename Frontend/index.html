@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <title>Rooms Test</title>
 
+    <!-- Axios + Vue -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
 
 <h1>Rooms</h1>
-//Aaa
+<nav>
+  <a href="index.html">Rooms</a> |
+  <a href="issues.html">Issues</a>
+</nav>
+<hr>
+
 <div id="app">
     <button @click="getAllRooms">Load Rooms</button>
 
@@ -18,11 +24,17 @@
         Error: {{ error }}
     </div>
 
-    <ul>
+    <ul v-if="rooms.length > 0">
         <li v-for="room in rooms" :key="room.roomId">
-            {{ room.roomName }} — {{ room.building }} — QR: {{ room.qrCodeToken }}
+            <strong>{{ room.roomName }}</strong> — 
+            {{ room.building }} — 
+            QR Token: {{ room.qrCodeToken }}
         </li>
     </ul>
+
+    <div v-else>
+        No rooms loaded yet…
+    </div>
 </div>
 
 <script src="./rooms.js"></script>

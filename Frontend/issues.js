@@ -1,4 +1,4 @@
-const issuesUri = "http://localhost:5005/api/issues";
+const issuesUri = "http://localhost:5005/api/issue";
 
 Vue.createApp({
     data() {
@@ -7,16 +7,11 @@ Vue.createApp({
             error: null
         };
     },
-
     methods: {
         getAllIssues() {
             axios.get(issuesUri)
-                .then(response => {
-                    this.issues = response.data;
-                })
-                .catch(err => {
-                    this.error = err.message;
-                });
+                .then(res => this.issues = res.data)
+                .catch(err => this.error = err.message);
         }
     }
 }).mount("#app");
