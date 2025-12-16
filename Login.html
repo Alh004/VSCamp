@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+
+    <!-- Axios + Vue -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Simple styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #app {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            background: #4A90E2;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #357ABD;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="app">
+    <h2>Login</h2>
+
+    <input 
+        type="email" 
+        placeholder="Skriv din @edu.zealand.dk mail"
+        v-model="email"
+    />
+
+    <button @click="login">Login</button>
+
+    <div class="error" v-if="error">{{ error }}</div>
+    <div class="success" v-if="success">{{ success }}</div>
+</div>
+
+<script>
+const apiUrl = "http://localhost:5005/api/auth/login";
+
+Vue.createApp({
+    data() {
+        return {
+            email: "",
+            error: null,
+            success: null
+        };
+    },
+
+    methods: {
+        login() {
+            this.error = null;
+            this.success = null;
+
+            axios.post(apiUrl, { email: this.email })
+                .then(res => {
+                    const user = res.data;
+
+                    // Save user to localStorage
+                    localStorage.setItem("userId", user.id);
+                    localStorage.setItem("userEmail", user.email);
+
+                    this.success = "Login successful! Redirecting…";
+
+                    // Redirect after 1.2 seconds
+                    setTimeout(() => {
+                        window.location.href = "issues.html";
+                    }, 1200);
+                })
+                .catch(err => {
+                    this.error = err.response?.data?.message || err.message;
+                });
+        }
+    }
+}).mount("#app");
+</script>
+
+</body>
+</html>

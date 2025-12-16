@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Indberet Problem</title>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+        }
+        button {
+            padding: 12px;
+            background: black;
+            color: white;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <h2>Indberet et problem i rum {{ roomId }}</h2>
+
+    <label>Titel</label>
+    <input v-model="title" placeholder="Kort titel">
+
+    <label>Beskrivelse</label>
+    <textarea v-model="description" placeholder="Beskriv problemet"></textarea>
+
+    <label>Kategori</label>
+    <select v-model="categoryId">
+        <option disabled value="">Vælg kategori</option>
+        <option value="1">IT</option>
+        <option value="2">Udstyr</option>
+        <option value="3">Rengøring</option>
+        <option value="4">Temperatur</option>
+        <option value="5">Administrativt</option>
+    </select>
+
+    <label>Upload billede (valgfri)</label>
+    <input type="file" @change="uploadImage">
+
+    <label>Din skolemail (@edu.zealand.dk)</label>
+    <input v-model="email" type="email">
+
+    <button @click="submitIssue">Send indberetning</button>
+
+    <p style="color: green;" v-if="success">Indsendt! Tak for din melding 🙏</p>
+</div>
+
+<script src="report.js"></script>
+
+</body>
+</html>
+
+
