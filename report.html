@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Indberet Problem</title>
+    <title>Indberet problem</title>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -10,60 +10,95 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
+            background: #f4f4f7;
+            margin: 0;
+            padding: 0;
         }
+
+        .container {
+            max-width: 650px;
+            background: white;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
         input, select, textarea {
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-        }
-        button {
             padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
             background: black;
             color: white;
             border: none;
-            width: 100%;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 8px;
             margin-top: 10px;
+        }
+
+        .success {
+            margin-top: 20px;
+            background: #d6ffd6;
+            padding: 12px;
+            border-radius: 8px;
+            color: #276327;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <h2>Indberet et problem i rum {{ roomId }}</h2>
+<div id="app" class="container">
 
-    <label>Titel</label>
-    <input v-model="title" placeholder="Kort titel">
-
-    <label>Beskrivelse</label>
-    <textarea v-model="description" placeholder="Beskriv problemet"></textarea>
+    <h2>Indberet et problem</h2>
+    <p><strong>Rum:</strong> {{ roomId }}</p>
 
     <label>Kategori</label>
     <select v-model="categoryId">
         <option disabled value="">Vælg kategori</option>
-        <option value="1">IT</option>
-        <option value="2">Udstyr</option>
-        <option value="3">Rengøring</option>
-        <option value="4">Temperatur</option>
-        <option value="5">Administrativt</option>
+        <option
+            v-for="c in categories"
+            :key="c.categoryId"
+            :value="c.categoryId">
+            {{ c.name }}
+        </option>
     </select>
 
-    <label>Upload billede (valgfri)</label>
-    <input type="file" @change="uploadImage">
+    <label>Titel</label>
+    <input v-model="title">
 
-    <label>Din skolemail (@edu.zealand.dk)</label>
+    <label>Beskrivelse</label>
+    <textarea v-model="description"></textarea>
+
+    <label>Skolemail</label>
     <input v-model="email" type="email">
 
-    <button @click="submitIssue">Send indberetning</button>
+    <label>Billede (valgfri)</label>
+    <input type="file" @change="uploadImage">
 
-    <p style="color: green;" v-if="success">Indsendt! Tak for din melding 🙏</p>
+    <img v-if="imageUrl" :src="imageUrl">
+
+    <button @click="submitReport">Send indberetning</button>
+
+    <div v-if="successMessage" class="success">
+        {{ successMessage }}
+    </div>
+
 </div>
 
 <script src="report.js"></script>
-
 </body>
 </html>
-
-
