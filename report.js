@@ -4,14 +4,13 @@ Vue.createApp({
     data() {
         return {
             roomId: null,
-            categories: [],
 
             title: "",
             description: "",
             categoryId: "",
             email: "",
-            imageUrl: "",
 
+            imageUrl: "",       // Cloudinary URL
             successMessage: null
         };
     },
@@ -21,22 +20,11 @@ Vue.createApp({
 
         if (!this.roomId) {
             alert("Room mangler i URL (?room=1)");
-            return;
         }
-
-        this.fetchCategories();
     },
 
     methods: {
-        async fetchCategories() {
-            try {
-                const res = await axios.get(`${apiBase}/api/category`);
-                this.categories = res.data;
-            } catch (err) {
-                alert("Kunne ikke hente kategorier");
-            }
-        },
-
+        // 🔹 Upload billede direkte til Cloudinary
         async uploadImage(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -45,22 +33,37 @@ Vue.createApp({
             fd.append("file", file);
             fd.append("upload_preset", "campfeed");
 
-            const res = await axios.post(
-                "https://api.cloudinary.com/v1_1/dkopspgw3/image/upload",
-                fd
-            );
+            try {
+                const res = await fetch(
+                    "https://api.cloudinary.com/v1_1/dzppdbkte/image/upload",
+                    {
+                        method: "POST",
+                        body: fd
+                    }
+                );
 
-            this.imageUrl = res.data.secure_url;
+                const data = await res.json();
+
+                if (!data.secure_url) {
+                    throw new Error("Upload fejlede");
+                }
+
+                this.imageUrl = data.secure_url; // 🔥 VIGTIG
+            } catch (err) {
+                console.error(err);
+                alert("Billed-upload fejlede");
+            }
         },
 
+        // 🔹 Opret sag
         async submitReport() {
             if (!this.email.endsWith("@edu.zealand.dk")) {
-                alert("Brug din skolemail");
+                alert("Brug din skolemail (@edu.zealand.dk)");
                 return;
             }
 
-            if (!this.categoryId) {
-                alert("Vælg en kategori");
+            if (!this.title || !this.description || !this.categoryId) {
+                alert("Udfyld alle felter");
                 return;
             }
 
@@ -70,14 +73,24 @@ Vue.createApp({
                 description: this.description,
                 roomId: Number(this.roomId),
                 categoryId: Number(this.categoryId),
-                imageUrl: this.imageUrl
+                imageUrl: this.imageUrl || null
             };
 
             try {
-                const res = await axios.post(`${apiBase}/api/report`, payload);
+                const res = await fetch(`${apiBase}/api/report`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error("API fejl");
+
+                const data = await res.json();
 
                 this.successMessage =
-                    "Tak! Din indberetning er sendt. Sagsnummer: " + res.data.issueId;
+                    "Tak! Din indberetning er sendt. Sagsnummer: " + data.issueId;
 
                 // reset
                 this.title = "";
@@ -85,8 +98,8 @@ Vue.createApp({
                 this.categoryId = "";
                 this.email = "";
                 this.imageUrl = "";
-
             } catch (err) {
+                console.error(err);
                 alert("Kunne ikke oprette sag");
             }
         }
