@@ -25,7 +25,8 @@ Vue.createApp({
       });
 
       alert("Gemt i databasen");
-      this.load(); // reload fra DB
+
+      this.load();
     }
   }
 }).mount("#app");
