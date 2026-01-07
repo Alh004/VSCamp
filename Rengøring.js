@@ -3,7 +3,9 @@ const api = "http://localhost:5005";
 Vue.createApp({
   data() {
     return {
-      issues: []
+      issues: [],
+      error: null,
+      selectedImage: null
     };
   },
 
@@ -13,15 +15,26 @@ Vue.createApp({
 
   methods: {
     async load() {
-      const r = await fetch(`${api}/api/issue`);
-      const allIssues = await r.json();
+      try {
+        const r = await fetch(`${api}/api/issue`);
+        if (!r.ok) throw new Error("Kunne ikke hente issues");
 
-      // 🧹 KUN RENGØRING
-      this.issues = allIssues.filter(
-        i => Number(i.categoryId) === 3
-      );
+        const allIssues = await r.json();
 
-      console.log("RENGØRING ISSUES:", this.issues);
+        // 🧹 KUN RENGØRING (categoryId = 3)
+        this.issues = allIssues.filter(
+          i => Number(i.categoryId) === 3
+        );
+
+        console.log("RENGØRING ISSUES:", this.issues);
+      } catch (e) {
+        console.error(e);
+        this.error = e.message;
+      }
+    },
+
+    openImage(url) {
+      this.selectedImage = url;
     },
 
     async save(issue) {
@@ -32,8 +45,7 @@ Vue.createApp({
       });
 
       alert("Gemt i databasen");
-
-      this.load(); // reload så UI matcher DB
+      this.load();
     }
   }
 }).mount("#app");

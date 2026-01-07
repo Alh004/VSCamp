@@ -3,7 +3,9 @@ const api = "http://localhost:5005";
 Vue.createApp({
   data() {
     return {
-      issues: []
+      issues: [],
+      error: null,
+      selectedImage: null
     };
   },
 
@@ -13,15 +15,26 @@ Vue.createApp({
 
   methods: {
     async load() {
-      const r = await fetch(`${api}/api/issue`);
-      const allIssues = await r.json();
+      try {
+        const r = await fetch(`${api}/api/issue`);
+        if (!r.ok) throw new Error("Kunne ikke hente issues");
 
-      // 🏢 KUN ADMINISTRATIV
-      this.issues = allIssues.filter(
-        i => Number(i.categoryId) === 5
-      );
+        const allIssues = await r.json();
 
-      console.log("ADMINISTRATIVE ISSUES:", this.issues);
+        // 🏢 KUN ADMINISTRATIV (categoryId = 5)
+        this.issues = allIssues.filter(
+          i => Number(i.categoryId) === 5
+        );
+
+        console.log("ADMINISTRATIVE ISSUES:", this.issues);
+      } catch (e) {
+        console.error(e);
+        this.error = e.message;
+      }
+    },
+
+    openImage(url) {
+      this.selectedImage = url;
     },
 
     async save(issue) {

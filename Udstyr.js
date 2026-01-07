@@ -3,7 +3,9 @@ const api = "http://localhost:5005";
 Vue.createApp({
   data() {
     return {
-      issues: []
+      issues: [],
+      error: null,
+      selectedImage: null
     };
   },
 
@@ -13,28 +15,42 @@ Vue.createApp({
 
   methods: {
     async load() {
-      const r = await fetch(`${api}/api/issue`);
-      const allIssues = await r.json();
+      try {
+        this.error = null;
 
-      // 🔧 Kun Udstyr
-      this.issues = allIssues.filter(
-        i => Number(i.categoryId) === 2
-      );
+        const r = await fetch(`${api}/api/issue`);
+        if (!r.ok) throw new Error("Kunne ikke hente issues fra API");
 
-      console.log("UDSTYR ISSUES:", this.issues);
+        const allIssues = await r.json();
+
+        // ✅ Kun Udstyr (categoryId = 2)
+        this.issues = allIssues.filter(i => Number(i.categoryId) === 2);
+
+        console.log("UDSTYR ISSUES:", this.issues);
+      } catch (e) {
+        console.error(e);
+        this.error = e?.message || "Der skete en fejl ved hentning";
+      }
+    },
+
+    openImage(url) {
+      this.selectedImage = url;
     },
 
     async save(issue) {
-      await axios.put(`${api}/api/issue/${issue.idissue}`, {
-        status: issue.status,
-        severity: issue.severity,
-        categoryId: issue.categoryId
-      });
+      try {
+        await axios.put(`${api}/api/issue/${issue.idissue}`, {
+          status: issue.status,
+          severity: issue.severity,
+          categoryId: issue.categoryId
+        });
 
-      alert("Gemt i databasen");
-
-      // reload så UI matcher DB
-      this.load();
+        alert("Gemt i databasen");
+        await this.load();
+      } catch (e) {
+        console.error(e);
+        alert("Kunne ikke gemme ændringer");
+      }
     }
   }
 }).mount("#app");
